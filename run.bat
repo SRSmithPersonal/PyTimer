@@ -1,0 +1,1 @@
+PowerShell.exe -WindowStyle hidden -ExecutionPolicy remotesigned -File %~dp0run.ps1
