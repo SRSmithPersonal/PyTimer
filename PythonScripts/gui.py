@@ -52,8 +52,11 @@ class Cleaner(QObject):
             while self.parent.finished:
                 sleep(0.1)
                 rem = self.parent.finished.pop()
-                delete_item(self.parent.list_box2, rem)
-                self.parent.activities.pop(rem)
+                try:
+                    delete_item(self.parent.list_box2, rem)
+                    self.parent.activities.pop(rem)
+                except:
+                    print("item no longer available")
             sleep(0.1)
         self.finished.emit()
 
@@ -66,7 +69,10 @@ class Updater(QObject):
         while True:
             while self.parent.update:
                 rem = self.parent.update.pop()
-                update_item(self.parent.list_box2, rem)
+                try:
+                    update_item(self.parent.list_box2, rem)
+                except:
+                    print("item no longer available")
             sleep(2)
         self.finished.emit()
 
@@ -81,8 +87,11 @@ class MyWidget(QWidget):
         self.integer_label2 = QLabel("H:", self)
         self.integer_label3 = QLabel("min:", self)
         self.ref_button = QPushButton("Refresh", self)
+        self.rem_button = QPushButton("Remove", self)
         self.integer_setting1 = QLineEdit(self)
+        self.integer_setting1.set_text('0')
         self.integer_setting2 = QLineEdit(self)
+        self.integer_setting2.set_text('0')
         self.activities = {}
         self.clean_thread = QThread()
         self.clean_worker = Cleaner()
@@ -97,6 +106,7 @@ class MyWidget(QWidget):
         layout = QHBoxLayout()
         box1 = QVBoxLayout()
         box2 = QVBoxLayout()
+        box5 = QVBoxLayout()
         box3 = QHBoxLayout()
         box4 = QHBoxLayout()
 
@@ -105,7 +115,9 @@ class MyWidget(QWidget):
         box1.addWidget(self.list_box1)
 
         self.list_box2.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        box2.addWidget(self.list_box2)
+        box5.addWidget(self.list_box2)
+        box5.addWidget(self.rem_button)
+        box2.addLayout(box5)
 
         # Create a label and line edit for the integer setting
 
@@ -170,18 +182,28 @@ class MyWidget(QWidget):
             item = QListWidgetItem(f"{ite.text()}")
             item.setToolTip(f'{int(int(integer_value)/60)} Hours {int(integer_value)%60} Minutes')
             self.list_box2.addItem(item)
-            self.activities[ite.text()] = {'thread': QThread(), 'worker': Worker()}
-            self.activities[ite.text()]['worker'].proc = ite.text()
-            self.activities[ite.text()]['worker'].t = int(integer_value)
-            self.activities[ite.text()]['worker'].parent = self
-            self.activities[ite.text()]['worker'].moveToThread(self.activities[ite.text()]['thread'])
-            self.activities[ite.text()]['thread'].started.connect(self.activities[ite.text()]['worker'].run)
-            self.activities[ite.text()]['worker'].finished.connect(self.activities[ite.text()]['thread'].quit)
-            self.activities[ite.text()]['worker'].finished.connect(self.activities[ite.text()]['worker'].deleteLater)
-            self.activities[ite.text()]['thread'].finished.connect(self.activities[ite.text()]['thread'].deleteLater)
+            v = ite.text()
+            self.activities[v] = {'thread': QThread(), 'worker': Worker()}
+            self.activities[v]['worker'].proc = v
+            self.activities[v]['worker'].t = int(integer_value)
+            self.activities[v]['worker'].parent = self
+            self.activities[v]['worker'].moveToThread(self.activities[v]['thread'])
+            self.activities[v]['thread'].started.connect(self.activities[v]['worker'].run)
+            self.activities[v]['worker'].finished.connect(self.activities[v]['thread'].quit)
+            self.activities[v]['worker'].finished.connect(self.activities[v]['worker'].deleteLater)
+            self.activities[v]['thread'].finished.connect(self.activities[v]['thread'].deleteLater)
             # # Step 6: Start the thread
             self.activities[ite.text()]['thread'].start()
             # print(f"Selected Item: {ite.text()}, Integer Value: {integer_value}")
+
+    def rem_values(self):
+        # Get the selected item from the list box
+        selected_items = self.list_box2.selectedItems()
+        for ite in selected_items:
+            v = ite.text()
+            self.activities[v]["thread"].terminate()
+            self.activities.pop(v)
+            self.list_box2.takeItem(self.list_box2.row(ite))
 
 
 def main():
