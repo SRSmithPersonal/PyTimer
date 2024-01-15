@@ -94,7 +94,7 @@ class MyWidget(QWidget):
         self.integer_label2 = QLabel("H", self)
         self.integer_label3 = QLabel("min", self)
         self.ref_button = QPushButton("Refresh", self)
-        self.rem_button = QPushButton("Remove", self)
+        # self.rem_button = QPushButton("Remove", self)
         self.integer_setting1 = QLineEdit(self)
         self.integer_setting1.setText('0')
         self.integer_setting2 = QLineEdit(self)
@@ -122,7 +122,7 @@ class MyWidget(QWidget):
         box1.addWidget(self.list_box1)
 
         self.list_box2.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        self.rem_button.clicked.connect(self.rem_values)
+        # self.rem_button.clicked.connect(self.rem_values)
         box5.addWidget(self.list_box2)
         # box5.addWidget(self.rem_button)
         box2.addLayout(box5)
