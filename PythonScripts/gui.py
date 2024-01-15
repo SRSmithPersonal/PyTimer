@@ -19,7 +19,7 @@ def update_item(listwidg, ite):
     print(ite, items_list)
     for item in items_list:
         print("setting")
-        item.setToolTip(str(ite['value']))
+        # item.setToolTip(str(ite['value']))
         item.setToolTip(f"{int(ite['value'] / 60)} Hours {ite['value']%60} Minutes")
         print("set")
 
@@ -89,9 +89,9 @@ class MyWidget(QWidget):
         self.ref_button = QPushButton("Refresh", self)
         self.rem_button = QPushButton("Remove", self)
         self.integer_setting1 = QLineEdit(self)
-        self.integer_setting1.set_text('0')
+        self.integer_setting1.setText('0')
         self.integer_setting2 = QLineEdit(self)
-        self.integer_setting2.set_text('0')
+        self.integer_setting2.setText('0')
         self.activities = {}
         self.clean_thread = QThread()
         self.clean_worker = Cleaner()
