@@ -115,6 +115,7 @@ class MyWidget(QWidget):
         box1.addWidget(self.list_box1)
 
         self.list_box2.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+        self.rem_button.clicked.connect(self.rem_values)
         box5.addWidget(self.list_box2)
         box5.addWidget(self.rem_button)
         box2.addLayout(box5)
