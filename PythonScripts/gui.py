@@ -20,6 +20,7 @@ def update_item(listwidg, ite):
     for item in items_list:
         print("setting")
         item.setToolTip(str(ite['value']))
+        item.setToolTip(f"{int(ite['value'] / 60)} Hours {ite['value']%60} Minutes")
         print("set")
 
 
@@ -76,9 +77,12 @@ class MyWidget(QWidget):
         self.finished = []
         self.list_box1 = QListWidget(self)
         self.list_box2 = QListWidget(self)
-        self.integer_label = QLabel("Timer amount (minutes):", self)
+        self.integer_label = QLabel("Time amount:", self)
+        self.integer_label2 = QLabel("H:", self)
+        self.integer_label3 = QLabel("min:", self)
         self.ref_button = QPushButton("Refresh", self)
-        self.integer_setting = QLineEdit(self)
+        self.integer_setting1 = QLineEdit(self)
+        self.integer_setting2 = QLineEdit(self)
         self.activities = {}
         self.clean_thread = QThread()
         self.clean_worker = Cleaner()
@@ -112,7 +116,10 @@ class MyWidget(QWidget):
 
         box1.addLayout(box4)
 
-        box3.addWidget(self.integer_setting)
+        box3.addWidget(self.integer_setting1)
+        box3.addWidget(self.integer_label2)
+        box3.addWidget(self.integer_setting2)
+        box3.addWidget(self.integer_label3)
 
         # Create a set button
         set_button = QPushButton("Set", self)
@@ -155,13 +162,13 @@ class MyWidget(QWidget):
         selected_items = self.list_box1.selectedItems()
 
         # Get the integer value from the line edit
-        integer_value = self.integer_setting.text()
+        integer_value = str(int(self.integer_setting1.text()) * 60 + int(self.integer_setting2.text()))
 
         # Print the selected item and integer value (you can replace this with your desired functionality)
         for ite in selected_items:
             self.list_box1.takeItem(self.list_box1.row(ite))
             item = QListWidgetItem(f"{ite.text()}")
-            item.setToolTip(integer_value)
+            item.setToolTip(f'{int(int(integer_value)/60)} Hours {int(integer_value)%60} Minutes')
             self.list_box2.addItem(item)
             self.activities[ite.text()] = {'thread': QThread(), 'worker': Worker()}
             self.activities[ite.text()]['worker'].proc = ite.text()
