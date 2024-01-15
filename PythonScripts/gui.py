@@ -31,8 +31,12 @@ class Worker(QObject):
     proc = ""
     parent = None
 
+    to_stop = False
+
     def run(self):
         for i in range(self.t, 0, -1):
+            if self.to_stop:
+                break
             if i == 1:
                 sleep_killer(60, self.proc+'.exe')
             else:
@@ -41,6 +45,9 @@ class Worker(QObject):
 
         self.finished.emit()
         self.parent.finished.append(self.proc)
+
+    def stop(self):
+        self.to_stop = True
 
 
 class Cleaner(QObject):
@@ -117,7 +124,7 @@ class MyWidget(QWidget):
         self.list_box2.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.rem_button.clicked.connect(self.rem_values)
         box5.addWidget(self.list_box2)
-        box5.addWidget(self.rem_button)
+        # box5.addWidget(self.rem_button)
         box2.addLayout(box5)
 
         # Create a label and line edit for the integer setting
@@ -202,8 +209,9 @@ class MyWidget(QWidget):
         selected_items = self.list_box2.selectedItems()
         for ite in selected_items:
             v = ite.text()
-            self.activities[v]["thread"].terminate()
-            self.activities.pop(v)
+            a = self.activities.pop(v)
+            a["worker"].stop()
+            a["thread"].quit()
             self.list_box2.takeItem(self.list_box2.row(ite))
 
 
