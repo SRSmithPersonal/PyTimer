@@ -1,4 +1,3 @@
-import sys
 from time import sleep
 from PythonScripts.Timer import sleep_killer, get_procs
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QLineEdit, QPushButton, \
