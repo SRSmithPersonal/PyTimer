@@ -7,6 +7,11 @@ from PyQt6.QtCore import QObject, QThread, pyqtSignal, Qt
 
 
 def delete_item(listwidg, itemname):
+    """
+    Delete item from a Qt list widget
+    :param listwidg: The list from which to delete
+    :param itemname: the name of the item
+    """
     items_list = listwidg.findItems(itemname, Qt.MatchFlag.MatchExactly)
     for item in items_list:
         r = listwidg.row(item)
@@ -14,17 +19,20 @@ def delete_item(listwidg, itemname):
 
 
 def update_item(listwidg, ite):
-    print("Here")
+    """
+    function that updates the tooltip of an item in an itemlist based on its remaining time
+    :param listwidg: the targeted list widget
+    :param ite: the title of the item to update
+    """
     items_list = listwidg.findItems(ite["title"], Qt.MatchFlag.MatchExactly)
-    print(ite, items_list)
     for item in items_list:
-        print("setting")
-        # item.setToolTip(str(ite['value']))
         item.setToolTip(f"{int(ite['value'] / 60)} Hours {ite['value']%60} Minutes")
-        print("set")
 
 
 class Worker(QObject):
+    """
+    The base worker class used to setup and track kill tasks
+    """
     finished = pyqtSignal()
 
     t = 0
@@ -51,6 +59,9 @@ class Worker(QObject):
 
 
 class Cleaner(QObject):
+    """
+    An object used for monitoring the main system on a separate thread and cleaning up completed items
+    """
     finished = pyqtSignal()
     parent = None
 
@@ -69,6 +80,9 @@ class Cleaner(QObject):
 
 
 class Updater(QObject):
+    """
+    An object used for monitoring the main system on a separate thread and updating the time tooltips on live items
+    """
     finished = pyqtSignal()
     parent = None
 
@@ -85,6 +99,9 @@ class Updater(QObject):
 
 
 class MyWidget(QWidget):
+    """
+    The main GUI object
+    """
     def __init__(self):
         super().__init__()
         self.finished = []
@@ -95,6 +112,7 @@ class MyWidget(QWidget):
         self.integer_label3 = QLabel("min", self)
         self.ref_button = QPushButton("Refresh", self)
         # self.rem_button = QPushButton("Remove", self)
+        # TODO: add ability to remove an active item
         self.integer_setting1 = QLineEdit(self)
         self.integer_setting1.setText('0')
         self.integer_setting2 = QLineEdit(self)
@@ -172,12 +190,19 @@ class MyWidget(QWidget):
         self.update_thread.start()
 
     def refresh_list(self):
+        """
+        Function for refreshing the list of active processes
+        """
         self.list_box1.clear()
         new_procs = [p for p in get_procs() if p not in self.activities.keys()]
         
         self.list_box1.addItems(new_procs)
 
     def set_values(self):
+        """
+        Sets time values for each selected item in the processes panel and moves them to the kill list
+        """
+
         # Get the selected item from the list box
         selected_items = self.list_box1.selectedItems()
 
@@ -205,6 +230,12 @@ class MyWidget(QWidget):
             # print(f"Selected Item: {ite.text()}, Integer Value: {integer_value}")
 
     def rem_values(self):
+        """
+        Under construction
+
+        For removing selected items from the kill list
+
+        """
         # Get the selected item from the list box
         selected_items = self.list_box2.selectedItems()
         for ite in selected_items:
