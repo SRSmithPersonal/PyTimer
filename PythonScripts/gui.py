@@ -1,6 +1,6 @@
 import sys
 from time import sleep
-from Timer import sleep_killer, get_procs
+from PythonScripts.Timer import sleep_killer, get_procs
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QListWidget, QLabel, QLineEdit, QPushButton, \
     QAbstractItemView, QHBoxLayout, QListWidgetItem
 from PyQt6.QtCore import QObject, QThread, pyqtSignal, Qt
@@ -213,15 +213,3 @@ class MyWidget(QWidget):
             a["worker"].stop()
             a["thread"].quit()
             self.list_box2.takeItem(self.list_box2.row(ite))
-
-
-def main():
-    app = QApplication(sys.argv)
-    app.setStyle('Fusion')
-    widget = MyWidget()
-    widget.show()
-    sys.exit(app.exec())
-
-
-if __name__ == '__main__':
-    main()
